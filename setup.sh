@@ -28,8 +28,9 @@ sudo apt-get install jp2a libturbojpeg0-dev libcap-dev
 sudo apt install python3-pip
 sudo apt install neofetch
 #git clone both repos
-#install missing libs
-#get logo and configure neofetch
+
+
+
 #theme items
 #prompt color
 #bashrc PS1 variable = prompt colors

@@ -2,7 +2,7 @@
 #Setup USB Access to printer:
 
 #Flags for testing
-devMode=true;
+devMode=false;
 if [ "$devMode" = true ]; then
   echo "Test Mode"
 else

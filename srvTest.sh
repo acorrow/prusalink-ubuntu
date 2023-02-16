@@ -58,7 +58,7 @@ echo "Starting services"
 systemctl daemon-reload
 systemctl start wlan0-redirect.service
 systemctl start eth0-redirect.service
-systemctl start prusa-link.service
+systemctl start prusa-link.service &
 
 echo "Enabling!!"
 # Enable the service to start at boot

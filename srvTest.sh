@@ -1,12 +1,14 @@
+echo "Stopping services..."
 systemctl stop prusa-link.service
 systemctl stop wlan0-redirect.service
 systemctl stop eth0-redirect.service
 
-sudo rm /etc/systemd/system/prusa-link.service
-sudo rm /etc/systemd/system/wlan0-redirect.service
-sudo rm /etc/systemd/system/eth0-redirect.service
+echo "Removing .service files"
+rm /etc/systemd/system/prusa-link.service
+rm /etc/systemd/system/wlan0-redirect.service
+rm /etc/systemd/system/eth0-redirect.service
 
-ServiceDir="/etc/systemd/system"
+echo "Making all the files..."
 
 sudo tee "/etc/systemd/system/prusa-link.service" > /dev/null <<EOF
 [Unit]
@@ -51,14 +53,17 @@ EOF
 
 
 
-
+echo "Starting services"
 # Reload the systemd daemon and start the service
 systemctl daemon-reload
 systemctl start wlan0-redirect.service
 systemctl start eth0-redirect.service
 systemctl start prusa-link.service
 
+echo "Enabling!!"
 # Enable the service to start at boot
 systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
+
+echo "ALL SET!"

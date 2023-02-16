@@ -14,7 +14,7 @@ Description=Prusa Link Service
 After=network.target
 
 [Service]
-ExecStart=/home/pi/.local/bin/prusa-link -i start
+ExecStart=prusalink -i start
 Type=oneshot
 RemainAfterExit=yes
 

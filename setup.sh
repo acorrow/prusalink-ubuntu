@@ -1,4 +1,9 @@
 #!/bin/bash
+sudo useradd -m -s /bin/bash pi
+echo "pi:password" | sudo chpasswd -c SHA512 -e
+
+sudo usermod -aG sudo pi
+
 GHT=$1
 sudo apt update -y && sudo apt upgrade -y
 #Install some libraries that will be needed for prusaLink and connect

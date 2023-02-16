@@ -1,6 +1,7 @@
 #!/bin/bash
 GHT=$1
-
+sudo apt-get update
+sudo apt-get upgrade
 #Install some libraries that will be needed for prusaLink and connect
 sudo apt-get install --yes jp2a libturbojpeg0-dev libcap-dev
 sudo apt install --yes python3-pip
@@ -52,8 +53,8 @@ git clone git@github.com:prusa3d/Prusa-Connect-SDK-Printer.git
 #That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
 #Actually install Prusa-Link
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer 
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Link
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer/. 
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Link/.
 
 # Define the systemd service
 echo "Removing .service files"

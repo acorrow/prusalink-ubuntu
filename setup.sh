@@ -117,3 +117,5 @@ systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
 echo "ALL SET!"
+
+reboot

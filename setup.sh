@@ -1,7 +1,13 @@
 #!/bin/bash
-sudo useradd -m -s /bin/bash pi
-sudo usermod --password $(echo "password" | openssl passwd -1 -stdin) pi
-sudo usermod -aG sudo pi
+
+if id "pi" >/dev/null 2>&1; then
+  echo "User 'pi' exists"
+else
+  echo "User 'pi' does not exist. Creating them now..."
+  sudo useradd -m -s /bin/bash pi
+  sudo usermod --password $(echo "password" | openssl passwd -1 -stdin) pi
+  sudo usermod -aG sudo pi
+fi
 
 GHT=$1
 echo "Starting System Updates"
@@ -26,7 +32,7 @@ echo -e "$CONTENT" >"$DIRECTORY/$FILE"
 if [ -z "$GHT" ]; then
   echo "Skipping the SSH Key add to Git Hub. Hope you already have one, if not this shit's about to FAIL!"
 else
-  ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts
+  ssh-keyscan -t ed25519 github.com >>/root/.ssh/known_hosts
   if stat /root/.ssh/id_rsa >/dev/null 2>&1; then
     echo "SSH Key already exists. Just export it to GitHub"
   else
@@ -49,14 +55,13 @@ fi
 git clone git@github.com:prusa3d/Prusa-Link.git
 git clone git@github.com:prusa3d/Prusa-Connect-SDK-Printer.git
 
-
 #Prompt Color
 #bashrc PS1 variable = prompt colors
 #[38;5;208m\]
 #That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
 #Actually install Prusa-Link
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer/. 
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer/.
 sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Link/.
 
 # Define the systemd service
@@ -67,7 +72,7 @@ rm /etc/systemd/system/eth0-redirect.service
 
 echo "Making all the files..."
 
-sudo tee "/etc/systemd/system/prusa-link.service" > /dev/null <<EOF
+sudo tee "/etc/systemd/system/prusa-link.service" >/dev/null <<EOF
 [Unit]
 Description=Prusa Link Service
 After=network.target
@@ -81,7 +86,7 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOF
 
-sudo tee "/etc/systemd/system/wlan0-redirect.service" > /dev/null <<EOF
+sudo tee "/etc/systemd/system/wlan0-redirect.service" >/dev/null <<EOF
 [Unit]
 Description=IPTables Redirect Service
 After=network.target
@@ -94,7 +99,7 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 EOF
-sudo tee "/etc/systemd/system/eth0-redirect.service" > /dev/null <<EOF
+sudo tee "/etc/systemd/system/eth0-redirect.service" >/dev/null <<EOF
 [Unit]
 Description=IPTables Redirect Service
 After=network.target

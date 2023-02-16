@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /opt
-
+export DEBIAN_FRONTEND=noninteractive
 #Install some libraries that will be needed for prusaLink and connect
 sudo apt-get install -y --force-yes jp2a libturbojpeg0-dev libcap-dev
 sudo apt install -y --force-yes python3-pip

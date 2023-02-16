@@ -1,7 +1,7 @@
-echo "Stopping services..."
-systemctl stop prusa-link.service
-systemctl stop wlan0-redirect.service
-systemctl stop eth0-redirect.service
+# echo "Stopping services..."
+# systemctl stop prusa-link.service
+# systemctl stop wlan0-redirect.service
+# systemctl stop eth0-redirect.service
 
 echo "Removing .service files"
 rm /etc/systemd/system/prusa-link.service

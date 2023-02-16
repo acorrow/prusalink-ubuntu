@@ -15,7 +15,7 @@ fi
 #     ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 # fi
 echo "Exporting SSH Key to GitHub"
-sshKey=$(cat ~/.ssh/id_rsa.pub)
+sshKey=$(cat /root/.ssh/id_rsa.pub)
 #Setup a GitHub SSH key so you can easily clone the repos...
 if [ -z "$GHT" ]; then
     echo "Skipping the SSH Key add to Git Hub. Hope you already have one...."

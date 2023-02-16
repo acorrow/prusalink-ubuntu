@@ -43,7 +43,7 @@ fi
 ##TODO Remove Welcome Message
 
 git clone git@github.com:prusa3d/Prusa-Link.git
-git clone https://github.com/prusa3d/Prusa-Connect-SDK-Printer
+git clone git@github.com:prusa3d/Prusa-Connect-SDK-Printer.git
 
 
 #Prompt Color

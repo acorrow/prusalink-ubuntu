@@ -22,7 +22,7 @@ echo -e "$CONTENT" >"$DIRECTORY/$FILE"
 if [ -z "$GHT" ]; then
   echo "Skipping the SSH Key add to Git Hub. Hope you already have one, if not this shit's about to FAIL!"
 else
-  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+  ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts
   if stat /root/.ssh/id_rsa >/dev/null 2>&1; then
     echo "SSH Key already exists. Just export it to GitHub"
   else
@@ -52,7 +52,8 @@ git clone https://github.com/prusa3d/Prusa-Connect-SDK-Printer
 #That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
 #Actually install Prusa-Link
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer Prusa-Link
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer 
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Link
 
 # Define the systemd service
 echo "Removing .service files"

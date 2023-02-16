@@ -1,7 +1,7 @@
 #!/bin/bash
 GHT=$1
-sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get update --yes
+sudo apt-get upgrade --yes
 #Install some libraries that will be needed for prusaLink and connect
 sudo apt-get install --yes jp2a libturbojpeg0-dev libcap-dev
 sudo apt install --yes python3-pip

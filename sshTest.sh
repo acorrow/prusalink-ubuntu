@@ -13,7 +13,7 @@ if [ -z "$GHT" ]; then
     echo "Skipping the SSH Key add to Git Hub. Hope you already have one...."
 else
     echo $sshKey
-    http --form POST https://api.github.com/user/keys \
+    http --print BbHh --form POST https://api.github.com/user/keys \
         Authorization:"token $GHT" \
         title="prusaLinkSSHKey" \
         key="$sshKey"

@@ -20,9 +20,10 @@ sshKey=$(cat ~/.ssh/id_rsa.pub)
 if [ -z "$GHT" ]; then
     echo "Skipping the SSH Key add to Git Hub. Hope you already have one...."
 else
+    echo $sshKey
     # http --print HhBb --form POST https://api.github.com/user/keys \
     #     Authorization:"token $GHT" \
     #     title="prusaLinkSSHKey" \
     #     key="$sshKey"
-    curl -X POST -H "Authorization: token $GHT" -d "{"title":"prusaLinkSSHKey","key":"$sshKey"}" https://api.github.com/user/keys
+    curl -X POST -H "Authorization: token $GHT" -d '{"title":"prusaLinkSSHKey","key":"$sshKey"}' https://api.github.com/user/keys
 fi

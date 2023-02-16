@@ -24,5 +24,5 @@ else
     #     Authorization:"token $GHT" \
     #     title="prusaLinkSSHKey" \
     #     key="$sshKey"
-    curl -v -X POST -H "Authorization: token $GHT" https://api.github.com/user/keys -d "{\"title\":\"prusaLinkSSHKey\",\"key\":"$sshKey"}" 
+    curl -X POST -H "Authorization: token $GHT" https://api.github.com/user/keys -d "{\"title\":\"prusaLinkSSHKey\",\"key\":\"$sshKey\"}" 
 fi

@@ -14,7 +14,7 @@ echo "Starting System Updates"
 sudo apt update -y && sudo apt upgrade -y
 echo "Initial Updates DONE"
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt install -y libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch
+sudo apt install -y iptables libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch
 
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 

@@ -1,11 +1,8 @@
 #!/bin/bash
 GHT=$1
-sudo apt-get update --yes
-sudo apt-get upgrade --yes
+sudo apt update -y && sudo apt upgrade -y
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt-get install --yes jp2a libturbojpeg0-dev libcap-dev
-sudo apt install --yes jq git python3-pip
-sudo apt install --yes neofetch
+sudo apt install -y libturbojpeg0-dev libcap-dev jq git python3-pip neofetch
 
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 

@@ -1,25 +1,10 @@
 #!/bin/bash
-#Setup USB Access to printer:
 
-#Flags for testing
-devMode=false;
-if [ "$devMode" = true ]; then
-  echo "Test Mode"
-else
-  echo "Setting up Prusa Link For Ubuntu"
-fi
-GHT=$1
-if [ -z "$GHT" ]; then
-  echo "Warning! No GitHub Token supplied!"
-    if [ "$devMode" = true ]; then
-        echo "But... You are in TestMode so whatever..."
-    else
-        echo "Exiting..."
-        exit;
-    fi
-else
-  echo "This script will create (or use) your SSH key with GitHub"
-fi
+
+#Install some libraries that will be needed for prusaLink and connect
+sudo apt-get install -y jp2a libturbojpeg0-dev libcap-dev
+sudo apt install -y python3-pip
+sudo apt install -y neofetch
 
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 
@@ -32,20 +17,26 @@ fi
 if [ -f "$DIRECTORY/$FILE" ]; then
   rm "$DIRECTORY/$FILE"
 fi
-echo -e "$CONTENT" > "$DIRECTORY/$FILE"
+echo -e "$CONTENT" >"$DIRECTORY/$FILE"
 
-#generate ssh key and export public key to term
-if [ ! -f ~/.ssh/id_rsa ]; 
-    echo "No SSH Key exists on this machine. Generating..."
-    then ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa; 
-fi
-echo "Exporting SSH Key to GitHub"
-sshKey=$(cat ~/.ssh/id_rsa.pub)
-#Setup a GitHub SSH key so you can easily clone the repos...
 if [ -z "$GHT" ]; then
-    echo "Skipping the SSH Key add to Git Hub. Hope you already have one...."
+  echo "Skipping the SSH Key add to Git Hub. Hope you already have one, if not this shit's about to FAIL!"
 else
-    curl -X POST -H "Authorization: token $GHT" -d "{"title":"prusaLinkSSHKey","key":"$sshKey"}" https://api.github.com/user/keys
+  if stat /root/.ssh/id_rsa >/dev/null 2>&1; then
+    echo "SSH Key already exists. Just export it to GitHub"
+  else
+    echo "No SSH Key exists on this machine. Generating..."
+    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+  fi
+  echo "Exporting SSH Key to GitHub"
+  sshKey=$(cat /root/.ssh/id_rsa.pub)
+  existingId=$(curl -s -X GET -H "Authorization: token $GHT" https://api.github.com/user/keys | jq -r '.[] | select(.title == "prusaLinkSSHKey") | .id')
+  echo $existingId
+  if [ ! -z "$existingId" ]; then
+    echo "SSHKey with this name already exists. Deleting it."
+    curl -s -X DELETE -H "Authorization: token $GHT" https://api.github.com/user/keys/$existingId
+  fi
+  curl -X POST -H "Authorization: token $GHT" https://api.github.com/user/keys -d "{\"title\":\"prusaLinkSSHKey\",\"key\":\"$sshKey\"}"
 fi
 
 ##TODO Remove Welcome Message
@@ -53,24 +44,18 @@ fi
 git clone git@github.com:prusa3d/Prusa-Link.git
 git clone https://github.com/prusa3d/Prusa-Connect-SDK-Printer
 
-#Install some libraries that will be needed for prusaLink and connect
-sudo apt-get install jp2a libturbojpeg0-dev libcap-dev httpie
-sudo apt install python3-pip
-sudo apt install neofetch
 
 #Prompt Color
 #bashrc PS1 variable = prompt colors
 #[38;5;208m\]
 #That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
-
 #Actually install Prusa-Link
 sudo pip3 install Prusa-Connect-SDK-Printer/.
 sudo pip3 install Prusa-Link/.
 
-
 # Define the systemd service
-cat > /etc/systemd/system/prusa-link.service << EOF
+cat >/etc/systemd/system/prusa-link.service <<EOF
 [Unit]
 Description=Prusa Link Service
 After=network.target

@@ -3,9 +3,9 @@ cd /opt
 GHT=$1
 
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt-get install --allow-yes jp2a libturbojpeg0-dev libcap-dev
-sudo apt install --allow-yes python3-pip
-sudo apt install --allow-yes neofetch
+sudo apt-get install -y--allow-yes jp2a libturbojpeg0-dev libcap-dev
+sudo apt install -y --allow-yes python3-pip
+sudo apt install -y --allow-yes neofetch
 
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 

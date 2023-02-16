@@ -2,7 +2,7 @@
 GHT=$1
 #Setup USB Access to printer:
 #generate ssh key and export public key to term
-if [ ! -f ~/.ssh/id_rsa ]; 
+if [ ! -e ~/.ssh/id_rsa ]; 
     echo "No SSH Key exists on this machine. Generating..."
     then ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa; 
 fi
@@ -12,6 +12,7 @@ sshKey=$(cat ~/.ssh/id_rsa.pub)
 if [ -z "$GHT" ]; then
     echo "Skipping the SSH Key add to Git Hub. Hope you already have one...."
 else
+    echo $sshKey
     http --form POST https://api.github.com/user/keys \
         Authorization:"token $GHT" \
         title="prusaLinkSSHKey" \

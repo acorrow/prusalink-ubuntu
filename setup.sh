@@ -54,7 +54,7 @@ git clone git@github.com:prusa3d/Prusa-Link.git
 git clone https://github.com/prusa3d/Prusa-Connect-SDK-Printer
 
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt-get install jp2a libturbojpeg0-dev libcap-dev
+sudo apt-get install jp2a libturbojpeg0-dev libcap-dev httpie
 sudo apt install python3-pip
 sudo apt install neofetch
 

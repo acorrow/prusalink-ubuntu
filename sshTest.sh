@@ -2,7 +2,9 @@
 GHT=$1
 #Setup USB Access to printer:
 #generate ssh key and export public key to term
-if [ ! -e /root/.ssh/id_rsa ]; 
+path="/root/.ssh/id_rsa"
+if [ ! -e $path ]; 
+    echo $path
     echo "No SSH Key exists on this machine. Generating..."
     then ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa; 
 fi

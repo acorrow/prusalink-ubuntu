@@ -2,10 +2,18 @@
 GHT=$1
 #Setup USB Access to printer:
 #generate ssh key and export public key to term
-if [ ! -f /root/.ssh/id_rsa ]; then
+
+if stat /root/.ssh/id_rsa >/dev/null 2>&1; then
+    echo "The file exists"
+else
     echo "No SSH Key exists on this machine. Generating..."
-    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa; 
+    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 fi
+
+# if [ ! -f /root/.ssh/id_rsa ]; then
+#     echo "No SSH Key exists on this machine. Generating..."
+#     ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+# fi
 echo "Exporting SSH Key to GitHub"
 sshKey=$(cat ~/.ssh/id_rsa.pub)
 #Setup a GitHub SSH key so you can easily clone the repos...

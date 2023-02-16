@@ -1,4 +1,5 @@
 #!/bin/bash
+GHT=$1
 #Setup USB Access to printer:
 #generate ssh key and export public key to term
 if [ ! -f ~/.ssh/id_rsa ]; 

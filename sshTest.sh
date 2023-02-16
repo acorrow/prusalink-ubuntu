@@ -15,7 +15,7 @@ else
     sshKey=$(cat /root/.ssh/id_rsa.pub)
     existingId=$(curl -s -X GET -H "Authorization: token $GHT" https://api.github.com/user/keys | jq -r '.[] | select(.title == "prusaLinkSSHKey") | .id')
     echo $existingId
-    if [ ! -z"$existingId" ]; then
+    if [ ! -z "$existingId" ]; then
         echo "SSHKey with this name already exists. Deleting it."
         curl -s -X DELETE -H "Authorization: token $GHT" https://api.github.com/user/keys/$existingId
     fi

@@ -1,5 +1,4 @@
 #!/bin/bash
-cd /opt
 GHT=$1
 
 #Install some libraries that will be needed for prusaLink and connect

@@ -141,5 +141,5 @@ systemctl enable wlan0-redirect.service
 git clone https://github.com/acorrow/LCD-show-ubuntu.git
 
 cd LCD-show-ubuntu
-sudo ./LCD35-show 90
+sudo ./LCD35-show
 

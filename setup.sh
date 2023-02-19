@@ -137,8 +137,8 @@ systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
 #Do this last. It will reboot the device.
-#tft
-git clone git@github.com:acorrow/LCD-show-ubuntu.git
+#tft and use http its public
+git clone https://github.com/acorrow/LCD-show-ubuntu.git
 sudo ./LCD-show-ubuntu/LCD35-show 90
 
 

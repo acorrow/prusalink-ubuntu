@@ -1,14 +1,21 @@
 #!/bin/bash
 
+#The Prusa-Link software looks for a user named `pi` since it's built on (by default)
+#A raspberry pi. This script takes into account that you might not be running a pi.
+#Perhaps you are running a potato... or a laptop... Who knows... Its Linux. You are
+#Maybe running it in Minecraft for all I know...
 if id "pi" >/dev/null 2>&1; then
   echo "User 'pi' exists"
 else
+  #Create the user pi, set its password to `password` and add it to the sudo group
   echo "User 'pi' does not exist. Creating them now..."
   sudo useradd -m -s /bin/bash pi
   sudo usermod --password $(echo "password" | openssl passwd -1 -stdin) pi
   sudo usermod -aG sudo pi
 fi
 
+#Here we read the GitHub Token from your input to this command. If you dont enter this
+#We can't clone the repos and you might as well stop right here...
 GHT=$1
 echo "Starting System Updates"
 sudo apt update -y && sudo apt upgrade -y
@@ -16,19 +23,21 @@ echo "Initial Updates DONE"
 #Install some libraries that will be needed for prusaLink and connect
 sudo apt install -y iptables libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch
 
+#This ini file tells prusalink to look at the USB port for a printer
+#Otherwise the default setup is a PI Zero with the Einsey connected
+#directly to the serial GPIO Pins on the pi.
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 
-DIRECTORY="/etc/Prusa-Link"
-FILE="prusa-link.ini"
-CONTENT="[printer]\nport=/dev/ttyACM0\nbaudrate=115200"
-if [ ! -d "$DIRECTORY" ]; then
-  mkdir -p "$DIRECTORY"
-fi
-if [ -f "$DIRECTORY/$FILE" ]; then
-  rm "$DIRECTORY/$FILE"
-fi
-echo -e "$CONTENT" >"$DIRECTORY/$FILE"
-
+sudo tee "/etc/Prusa-Link/prusa-link.ini" >/dev/null <<EOF
+[printer]
+port=/dev/ttyACM0
+baudrate=115200
+EOF
+#If we passed in the GitHub Token, we are going to use that to manage our SSH Keys
+#On GitHub. Specifically the Prusa-Link repo(s) require SSH auth. So we quickly
+#Check to see if there is already a key we can just upload, if not we create one
+#And upload it. If you passed in nothing here, we abort as we can't get the code
+#We are tryijng to build
 if [ -z "$GHT" ]; then
   echo "Skipping the SSH Key add to Git Hub. Hope you already have one, if not this shit's about to FAIL!"
 else
@@ -71,7 +80,8 @@ rm /etc/systemd/system/wlan0-redirect.service
 rm /etc/systemd/system/eth0-redirect.service
 
 echo "Making all the files..."
-
+#We define a service to redirect port 80 to 8080, one service for each adapter
+#Again we make no assumptions here, maybe you are using a Pi with POE here?
 sudo tee "/etc/systemd/system/prusa-link.service" >/dev/null <<EOF
 [Unit]
 Description=Prusa Link Service
@@ -126,6 +136,9 @@ systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
-echo "ALL SET!"
+#Do this last. It will reboot the device.
+#tft
+git clone git@github.com:acorrow/LCD-show-ubuntu.git
+sudo ./LCD-show-ubuntu/LCD35-show 90
 
-reboot
+

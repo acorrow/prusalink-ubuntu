@@ -21,7 +21,7 @@ echo "Starting System Updates"
 sudo apt update -y && sudo apt upgrade -y
 echo "Initial Updates DONE"
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt install -y iptables libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch
+sudo apt install -y iptables libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch build-essential libsdl1.2-dev libsdl-image1.2-dev libsdl-ttf2.0-dev automake libtool
 
 #This ini file tells prusalink to look at the USB port for a printer
 #Otherwise the default setup is a PI Zero with the Einsey connected
@@ -135,6 +135,8 @@ echo "Enabling!!"
 systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
+
+
 
 #Do this last. It will reboot the device.
 #tft and use http its public

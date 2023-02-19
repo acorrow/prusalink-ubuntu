@@ -21,7 +21,21 @@ echo "Starting System Updates"
 sudo apt update -y && sudo apt upgrade -y
 echo "Initial Updates DONE"
 #Install some libraries that will be needed for prusaLink and connect
-sudo apt install -y iptables libmagic1 libturbojpeg0-dev libcap-dev jq git python3-pip neofetch build-essential libsdl1.2-dev libsdl-image1.2-dev libsdl-ttf2.0-dev automake libtool
+sudo apt install -y \
+iptables \
+libmagic1 \
+libturbojpeg0-dev \
+libcap-dev \
+jq \
+git \
+python3-pip \
+neofetch \
+build-essential \
+libsdl1.2-dev \
+libsdl-image1.2-dev \
+libsdl-ttf2.0-dev \
+automake \
+libtool
 
 #This ini file tells prusalink to look at the USB port for a printer
 #Otherwise the default setup is a PI Zero with the Einsey connected
@@ -64,10 +78,6 @@ fi
 git clone git@github.com:prusa3d/Prusa-Link.git
 git clone git@github.com:prusa3d/Prusa-Connect-SDK-Printer.git
 
-#Prompt Color
-#bashrc PS1 variable = prompt colors
-#[38;5;208m\]
-#That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
 #Actually install Prusa-Link
 sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer/.
@@ -136,12 +146,21 @@ systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
+cd
+git clone https://github.com/ImpulseAdventure/GUIslice
 
+
+#cd GUIslice/examples/linux
+#make test_sdl1
+
+#Prompt Color
+#bashrc PS1 variable = prompt colors
+#[38;5;208m\]
+#That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
 #Do this last. It will reboot the device.
 #tft and use http its public
 git clone https://github.com/acorrow/LCD-show-ubuntu.git
-
 cd LCD-show-ubuntu
 sudo ./LCD35-show
 

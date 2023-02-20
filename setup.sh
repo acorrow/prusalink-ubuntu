@@ -81,9 +81,9 @@ sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install /home/pi/Prusa-Link/.
 
 # Define the systemd service
 echo "Removing .service files"
-rm /etc/systemd/system/prusa-link.service
-rm /etc/systemd/system/wlan0-redirect.service
-rm /etc/systemd/system/eth0-redirect.service
+sudo rm /etc/systemd/system/prusa-link.service
+sudo rm /etc/systemd/system/wlan0-redirect.service
+sudo rm /etc/systemd/system/eth0-redirect.service
 
 echo "Making all the files..."
 #We define a service to redirect port 80 to 8080, one service for each adapter
@@ -131,16 +131,16 @@ EOF
 
 echo "Starting services"
 # Reload the systemd daemon and start the service
-systemctl daemon-reload
-systemctl start wlan0-redirect.service
-systemctl start eth0-redirect.service
-systemctl start prusa-link.service &
+sudo systemctl daemon-reload
+sudo systemctl start wlan0-redirect.service
+sudo systemctl start eth0-redirect.service
+sudo systemctl start prusa-link.service &
 
 echo "Enabling!!"
 # Enable the service to start at boot
-systemctl enable prusa-link.service
-systemctl enable eth0-redirect.service
-systemctl enable wlan0-redirect.service
+sudo systemctl enable prusa-link.service
+sudo systemctl enable eth0-redirect.service
+sudo systemctl enable wlan0-redirect.service
 
 cd /home/pi/tslib
 ./autogen.sh

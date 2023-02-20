@@ -147,7 +147,16 @@ systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
+
+
 cd
+git clone https://github.com/libts/tslib.git
+cd tslib
+./autogen.sh
+./configure
+make
+sudo make install
+
 git clone https://github.com/ImpulseAdventure/GUIslice
 #Enable tslib sdl1.2 mode for Linux.
 sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h

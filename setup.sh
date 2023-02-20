@@ -67,6 +67,7 @@ sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/
 #directly to the serial GPIO Pins on the pi.
 echo "Setting up etc/Prusa-Link/prusa-link.ini - This allows for USB access to the Printer"
 
+sudo mkdir -p /etc/Prusa-Link/
 sudo tee "/etc/Prusa-Link/prusa-link.ini" >/dev/null <<EOF
 [printer]
 port=/dev/ttyACM0
@@ -154,6 +155,7 @@ TSLIB_TSDEVICE="/dev/input/event0"
 TSLIB_CALIBFILE="/usr/local/etc/pointercal"
 TSLIB_CONFFILE="/usr/local/etc/ts.conf"
 
+
 # Check if each environment variable is defined in the file
 if ! grep -q "^TSLIB_FBDEVICE=" /etc/environment; then
   sudo sh -c 'echo "TSLIB_FBDEVICE=\"$TSLIB_FBDEVICE\"" >> /etc/environment'
@@ -176,6 +178,10 @@ source /etc/environment
 
 # Print a message indicating that the script has finished
 echo "Environment variables updated"
+#GUIslice doesn't respect the locations you chose, so you need a 
+#symbolic link to the files to be in the etc folder. Dumb. Should raise a bug.
+sudo ln -sf /usr/local/etc/pointercal /etc/pointercal
+sudo ln -sf /usr/local/etc/ts.conf /etc/ts.conf
 
 #cd GUIslice/examples/linux
 #make test_sdl1
@@ -184,6 +190,9 @@ echo "Environment variables updated"
 #bashrc PS1 variable = prompt colors
 #[38;5;208m\]
 #That is the color we need to grep/replace in the PS1 for Ubuntu bash...
+
+#Add a cronjob that will check to be sure pointercal exists on every boot, and if not, run tf_calibrate to create it
+echo "@reboot if [ ! -f \"/usr/local/etc/pointercal\" ]; then sudo tf_calibrate; fi" | sudo crontab -
 
 #Do this last. It will reboot the device.
 #tft and use http its public

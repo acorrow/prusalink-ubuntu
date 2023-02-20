@@ -1,11 +1,17 @@
 #!/bin/bash
-
+cd
+git clone https://github.com/libts/tslib.git
+cd tslib
+./autogen.sh
+./configure
+make
+sudo make install
 cd
 git clone https://github.com/ImpulseAdventure/GUIslice
 #Enable tslib sdl1.2 mode for Linux.
-sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h
+sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' /home/pi/GUIslice/src/GUIslice_config.h
 #Modify the Touchscreen to be event0...
-sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/configs/rpi-sdl1-default-tslib.h
+sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' /home/pi/GUIslice/configs/rpi-sdl1-default-tslib.h
 
 # Set the desired values of the environment variables
 TSLIB_FBDEVICE="/dev/fb1"

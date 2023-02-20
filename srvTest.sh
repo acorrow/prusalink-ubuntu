@@ -1,69 +1,51 @@
-# echo "Stopping services..."
-# systemctl stop prusa-link.service
-# systemctl stop wlan0-redirect.service
-# systemctl stop eth0-redirect.service
+#!/bin/bash
 
-echo "Removing .service files"
-rm /etc/systemd/system/prusa-link.service
-rm /etc/systemd/system/wlan0-redirect.service
-rm /etc/systemd/system/eth0-redirect.service
+cd
+git clone https://github.com/ImpulseAdventure/GUIslice
+#Enable tslib sdl1.2 mode for Linux.
+sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h
+#Modify the Touchscreen to be event0...
+sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/configs/rpi-sdl1-default-tslib.h
 
-echo "Making all the files..."
+# Set the desired values of the environment variables
+TSLIB_FBDEVICE="/dev/fb1"
+TSLIB_TSDEVICE="/dev/input/event0"
+TSLIB_CALIBFILE="/usr/local/etc/pointercal"
+TSLIB_CONFFILE="/usr/local/etc/ts.conf"
 
-sudo tee "/etc/systemd/system/prusa-link.service" > /dev/null <<EOF
-[Unit]
-Description=Prusa Link Service
-After=network.target
+# Check if each environment variable is defined in the file
+if ! grep -q "^TSLIB_FBDEVICE=" /etc/environment; then
+  echo "TSLIB_FBDEVICE=\"$TSLIB_FBDEVICE\"" >> /etc/environment
+fi
 
-[Service]
-ExecStart=prusalink -i start
-Type=oneshot
-RemainAfterExit=yes
+if ! grep -q "^TSLIB_TSDEVICE=" /etc/environment; then
+  echo "TSLIB_TSDEVICE=\"$TSLIB_TSDEVICE\"" >> /etc/environment
+fi
 
-[Install]
-WantedBy=multi-user.target
-EOF
+if ! grep -q "^TSLIB_CALIBFILE=" /etc/environment; then
+  echo "TSLIB_CALIBFILE=\"$TSLIB_CALIBFILE\"" >> /etc/environment
+fi
 
-sudo tee "/etc/systemd/system/wlan0-redirect.service" > /dev/null <<EOF
-[Unit]
-Description=IPTables Redirect Service
-After=network.target
+if ! grep -q "^TSLIB_CONFFILE=" /etc/environment; then
+  echo "TSLIB_CONFFILE=\"$TSLIB_CONFFILE\"" >> /etc/environment
+fi
 
-[Service]
-ExecStart=/usr/sbin/iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-Type=oneshot
-RemainAfterExit=yes
+# Load the updated environment variables
+source /etc/environment
 
-[Install]
-WantedBy=multi-user.target
-EOF
-sudo tee "/etc/systemd/system/eth0-redirect.service" > /dev/null <<EOF
-[Unit]
-Description=IPTables Redirect Service
-After=network.target
+# Print a message indicating that the script has finished
+echo "Environment variables updated"
 
-[Service]
-ExecStart=/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-Type=oneshot
-RemainAfterExit=yes
+#cd GUIslice/examples/linux
+#make test_sdl1
 
-[Install]
-WantedBy=multi-user.target
-EOF
+#Prompt Color
+#bashrc PS1 variable = prompt colors
+#[38;5;208m\]
+#That is the color we need to grep/replace in the PS1 for Ubuntu bash...
 
-
-
-echo "Starting services"
-# Reload the systemd daemon and start the service
-systemctl daemon-reload
-systemctl start wlan0-redirect.service
-systemctl start eth0-redirect.service
-systemctl start prusa-link.service &
-
-echo "Enabling!!"
-# Enable the service to start at boot
-systemctl enable prusa-link.service
-systemctl enable eth0-redirect.service
-systemctl enable wlan0-redirect.service
-
-echo "ALL SET!"
+#Do this last. It will reboot the device.
+#tft and use http its public
+git clone https://github.com/acorrow/LCD-show-ubuntu.git
+cd LCD-show-ubuntu
+sudo ./LCD35-show

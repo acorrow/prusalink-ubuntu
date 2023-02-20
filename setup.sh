@@ -22,6 +22,7 @@ sudo apt update -y && sudo apt upgrade -y
 echo "Initial Updates DONE"
 #Install some libraries that will be needed for prusaLink and connect
 sudo apt install -y \
+evtest \
 iptables \
 libmagic1 \
 libturbojpeg0-dev \
@@ -148,7 +149,39 @@ systemctl enable wlan0-redirect.service
 
 cd
 git clone https://github.com/ImpulseAdventure/GUIslice
+#Enable tslib sdl1.2 mode for Linux.
+sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h
+#Modify the Touchscreen to be event0...
+sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/configs/rpi-sdl1-default-tslib.h
 
+# Set the desired values of the environment variables
+TSLIB_FBDEVICE="/dev/fb1"
+TSLIB_TSDEVICE="/dev/input/event0"
+TSLIB_CALIBFILE="/usr/local/etc/pointercal"
+TSLIB_CONFFILE="/usr/local/etc/ts.conf"
+
+# Check if each environment variable is defined in the file
+if ! grep -q "^TSLIB_FBDEVICE=" /etc/environment; then
+  echo "TSLIB_FBDEVICE=\"$TSLIB_FBDEVICE\"" >> /etc/environment
+fi
+
+if ! grep -q "^TSLIB_TSDEVICE=" /etc/environment; then
+  echo "TSLIB_TSDEVICE=\"$TSLIB_TSDEVICE\"" >> /etc/environment
+fi
+
+if ! grep -q "^TSLIB_CALIBFILE=" /etc/environment; then
+  echo "TSLIB_CALIBFILE=\"$TSLIB_CALIBFILE\"" >> /etc/environment
+fi
+
+if ! grep -q "^TSLIB_CONFFILE=" /etc/environment; then
+  echo "TSLIB_CONFFILE=\"$TSLIB_CONFFILE\"" >> /etc/environment
+fi
+
+# Load the updated environment variables
+source /etc/environment
+
+# Print a message indicating that the script has finished
+echo "Environment variables updated"
 
 #cd GUIslice/examples/linux
 #make test_sdl1

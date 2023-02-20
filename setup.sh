@@ -12,11 +12,16 @@ else
   sudo useradd -m -s /bin/bash pi
   sudo usermod --password $(echo "password" | openssl passwd -1 -stdin) pi
   sudo usermod -aG sudo pi
+  echo "Ok all set, run this script again when you are ready. As pi... so either log out and back in as user: pi, or...idk.."
+  exit 1
 fi
 
-#Here we read the GitHub Token from your input to this command. If you dont enter this
-#We can't clone the repos and you might as well stop right here...
-GHT=$1
+# Check if the script is running as the pi user
+if [[ $EUID -ne 1000 ]]; then
+  echo "This script must be run as the pi user"
+  exit 1
+fi
+
 echo "Starting System Updates"
 sudo apt update -y && sudo apt upgrade -y
 echo "Initial Updates DONE"
@@ -38,6 +43,25 @@ libsdl-ttf2.0-dev \
 automake \
 libtool
 
+# Clone all our necessary repos...
+cd /home/pi
+git clone https://github.com/prusa3d/Prusa-Link.git
+git clone https://github.com/prusa3d/Prusa-Connect-SDK-Printer.git
+git clone https://github.com/libts/tslib.git
+git clone https://github.com/ImpulseAdventure/GUIslice
+git clone https://github.com/acorrow/LCD-show-ubuntu.git
+
+#Fix 1: GUIslice needs a config selected, thats fine do it by uncommenting the generic SDL Linux setup file. It works perfectly.
+#Enable tslib sdl1.2 mode for Linux.
+sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h
+
+#Except for one thing, the touchscreen event will be hard coded in the config to dev/input/touchscreen
+#This may not be the case for you, and in any event, its always an eventId where i've seen, so replace
+#touchscreen with event0 in this case. You can see how to modify this script to change it to whatever.
+#TODO Automatically grab the connected/identified touchscreen via evtest and use that here.
+#Modify the Touchscreen to be event0...
+sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/configs/rpi-sdl1-default-tslib.h
+
 #This ini file tells prusalink to look at the USB port for a printer
 #Otherwise the default setup is a PI Zero with the Einsey connected
 #directly to the serial GPIO Pins on the pi.
@@ -48,41 +72,12 @@ sudo tee "/etc/Prusa-Link/prusa-link.ini" >/dev/null <<EOF
 port=/dev/ttyACM0
 baudrate=115200
 EOF
-#If we passed in the GitHub Token, we are going to use that to manage our SSH Keys
-#On GitHub. Specifically the Prusa-Link repo(s) require SSH auth. So we quickly
-#Check to see if there is already a key we can just upload, if not we create one
-#And upload it. If you passed in nothing here, we abort as we can't get the code
-#We are tryijng to build
-if [ -z "$GHT" ]; then
-  echo "Skipping the SSH Key add to Git Hub. Hope you already have one, if not this shit's about to FAIL!"
-else
-  ssh-keyscan -t ed25519 github.com >>/root/.ssh/known_hosts
-  if stat /root/.ssh/id_rsa >/dev/null 2>&1; then
-    echo "SSH Key already exists. Just export it to GitHub"
-  else
-    echo "No SSH Key exists on this machine. Generating..."
-    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
-  fi
-  echo "Exporting SSH Key to GitHub"
-  sshKey=$(cat /root/.ssh/id_rsa.pub)
-  existingId=$(curl -s -X GET -H "Authorization: token $GHT" https://api.github.com/user/keys | jq -r '.[] | select(.title == "prusaLinkSSHKey") | .id')
-  echo $existingId
-  if [ ! -z "$existingId" ]; then
-    echo "SSHKey with this name already exists. Deleting it."
-    curl -s -X DELETE -H "Authorization: token $GHT" https://api.github.com/user/keys/$existingId
-  fi
-  curl -X POST -H "Authorization: token $GHT" https://api.github.com/user/keys -d "{\"title\":\"prusaLinkSSHKey\",\"key\":\"$sshKey\"}"
-fi
 
 ##TODO Remove Welcome Message
 
-git clone git@github.com:prusa3d/Prusa-Link.git
-git clone git@github.com:prusa3d/Prusa-Connect-SDK-Printer.git
-
-
 #Actually install Prusa-Link
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Connect-SDK-Printer/.
-sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install Prusa-Link/.
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install /home/pi/Prusa-Connect-SDK-Printer/.
+sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install /home/pi/Prusa-Link/.
 
 # Define the systemd service
 echo "Removing .service files"
@@ -147,21 +142,11 @@ systemctl enable prusa-link.service
 systemctl enable eth0-redirect.service
 systemctl enable wlan0-redirect.service
 
-
-
-cd
-git clone https://github.com/libts/tslib.git
-cd tslib
+cd /home/pi/tslib
 ./autogen.sh
 ./configure
 make
 sudo make install
-
-git clone https://github.com/ImpulseAdventure/GUIslice
-#Enable tslib sdl1.2 mode for Linux.
-sed -i 's|//\(#include "../configs/rpi-sdl1-default-tslib.h"\)|\1|' ~/GUIslice/src/GUIslice_config.h
-#Modify the Touchscreen to be event0...
-sed -i 's/\(#define GSLC_DEV_TOUCH *\).*$/\1"\/dev\/input\/event0"/' ~/GUIslice/configs/rpi-sdl1-default-tslib.h
 
 # Set the desired values of the environment variables
 TSLIB_FBDEVICE="/dev/fb1"
@@ -202,7 +187,6 @@ echo "Environment variables updated"
 
 #Do this last. It will reboot the device.
 #tft and use http its public
-git clone https://github.com/acorrow/LCD-show-ubuntu.git
-cd LCD-show-ubuntu
+cd /home/pi/LCD-show-ubuntu
 sudo ./LCD35-show
 

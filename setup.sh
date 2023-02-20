@@ -156,19 +156,19 @@ TSLIB_CONFFILE="/usr/local/etc/ts.conf"
 
 # Check if each environment variable is defined in the file
 if ! grep -q "^TSLIB_FBDEVICE=" /etc/environment; then
-  echo "TSLIB_FBDEVICE=\"$TSLIB_FBDEVICE\"" >> /etc/environment
+  sudo sh -c 'echo "TSLIB_FBDEVICE=\"$TSLIB_FBDEVICE\"" >> /etc/environment'
 fi
 
 if ! grep -q "^TSLIB_TSDEVICE=" /etc/environment; then
-  echo "TSLIB_TSDEVICE=\"$TSLIB_TSDEVICE\"" >> /etc/environment
+  sudo sh -c 'echo "TSLIB_TSDEVICE=\"$TSLIB_TSDEVICE\"" >> /etc/environment'
 fi
 
 if ! grep -q "^TSLIB_CALIBFILE=" /etc/environment; then
-  echo "TSLIB_CALIBFILE=\"$TSLIB_CALIBFILE\"" >> /etc/environment
+  sudo sh -c 'echo "TSLIB_CALIBFILE=\"$TSLIB_CALIBFILE\"" >> /etc/environment'
 fi
 
 if ! grep -q "^TSLIB_CONFFILE=" /etc/environment; then
-  echo "TSLIB_CONFFILE=\"$TSLIB_CONFFILE\"" >> /etc/environment
+  sudo sh -c 'echo "TSLIB_CONFFILE=\"$TSLIB_CONFFILE\"" >> /etc/environment'
 fi
 
 # Load the updated environment variables

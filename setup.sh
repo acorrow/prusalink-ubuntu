@@ -77,6 +77,7 @@ EOF
 ##TODO Remove Welcome Message
 
 #Actually install Prusa-Link
+sudo pip3 install git+https://github.com/prusa3d/gcode-metadata.git@master#egg=gcode_metadata
 sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install /home/pi/Prusa-Connect-SDK-Printer/.
 sudo PIP_NO_WARN_SCRIPT_LOCATION=1 pip3 install /home/pi/Prusa-Link/.
 
